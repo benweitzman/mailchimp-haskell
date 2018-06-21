@@ -35,7 +35,6 @@ import Servant.API
 
 -- servant-client
 import Servant.Client
-import Servant.Client.Generic
 
 
 -- |
@@ -80,4 +79,4 @@ instance Generics.SOP.Generic ListClient
 --
 --
 
-instance (Client ListApi ~ client) => ClientLike client ListClient
+instance (Client ClientM ListApi ~ client) => ClientLike client ListClient

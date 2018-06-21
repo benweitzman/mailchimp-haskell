@@ -58,7 +58,6 @@ import Servant.API
 
 -- servant-client
 import Servant.Client
-import Servant.Client.Generic
 
 -- transformers
 import Control.Monad.IO.Class
@@ -98,7 +97,7 @@ instance Generics.SOP.Generic MainClient
 --
 --
 
-instance (Client MainApi ~ client) => ClientLike client MainClient
+instance (Client ClientM MainApi ~ client) => ClientLike client MainClient
 
 
 -- |
@@ -169,7 +168,7 @@ instance Generics.SOP.Generic AuthClient
 --
 --
 
-instance (Client AuthApi ~ client) => ClientLike client AuthClient
+instance (Client ClientM AuthApi ~ client) => ClientLike client AuthClient
 
 
 -- |
@@ -202,7 +201,7 @@ run manager key =
     Just baseUrl =
       makeBaseUrl key
   in
-    liftIO . flip runClientM (ClientEnv manager baseUrl)
+    liftIO . flip runClientM (ClientEnv manager baseUrl Nothing)
 
 
 -- |

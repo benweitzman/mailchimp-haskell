@@ -47,7 +47,6 @@ import Servant.API
 
 -- servant-client
 import Servant.Client
-import Servant.Client.Generic
 
 -- text
 import Data.Text (Text)
@@ -181,7 +180,7 @@ instance Generics.SOP.Generic ListMemberClient
 --
 --
 
-instance (Client ListMemberApi ~ client) => ClientLike client ListMemberClient
+instance (Client ClientM ListMemberApi ~ client) => ClientLike client ListMemberClient
 
 
 -- |
