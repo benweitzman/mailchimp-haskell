@@ -6,6 +6,7 @@
 {-# LANGUAGE RecordWildCards #-}
 {-# LANGUAGE TypeFamilies #-}
 {-# LANGUAGE TypeOperators #-}
+{-# LANGUAGE ScopedTypeVariables #-}
 
 ----------------------------------------------------------------------
 -- |
@@ -24,6 +25,7 @@ module Web.MailChimp.List.Member
   , ListMemberResponse (..)
   , ListMembersResponse (..)
   , getAllListMembers
+  , iterateAllListMembers
   , ListMemberId
   , ListMemberStatus (..)
   )
@@ -156,17 +158,31 @@ data ListMemberClient =
 getAllListMembers
   :: ListMemberClient
   -> ClientM [ListMemberResponse]
-getAllListMembers ListMemberClient {..} = do
+getAllListMembers listClient = concat <$> iterateAllListMembers listClient return
+
+-- |
+--
+--
+--
+-- @since 0.4.0
+
+iterateAllListMembers
+  :: forall a . ListMemberClient
+  -> ([ListMemberResponse] -> ClientM a)
+  -> ClientM [a]
+iterateAllListMembers ListMemberClient {..} f = do
   xs <- listMembersMembers <$> getListMembers Nothing
+  applied <- f xs
   rest <- go 0 (length xs)
-  return $ xs ++ rest
+  return $ applied : rest
   where
-    go :: Int -> Int -> ClientM [ListMemberResponse]
+    go :: Int -> Int -> ClientM [a]
     go _ 0 = return []
     go offset n = do
       xs <- listMembersMembers <$> getListMembers (Just $ offset + n)
+      applied <- f xs
       rest <- go (offset + n) (length xs)
-      return $ xs ++ rest
+      return $ applied : rest
 
 
 -- |
